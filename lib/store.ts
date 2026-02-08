@@ -162,7 +162,8 @@ const initialServices: Service[] = [
     rating: 4.9,
     reviews: 127,
     price: 85,
-    image: "/volcano-view-hotel-el-salvador.jpg",
+    // IMAGEN REAL DE UN HOTEL CON VISTA:
+    image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=1000",
     isRemate: true,
     discount: 30,
     allowsPool: true,
@@ -186,7 +187,8 @@ const initialServices: Service[] = [
     rating: 4.8,
     reviews: 89,
     price: 45,
-    image: "/surfing-beach-el-tunco-el-salvador.jpg",
+    // IMAGEN REAL DE SURF:
+    image: "https://images.unsplash.com/photo-1502680390469-be75c86b636f?auto=format&fit=crop&q=80&w=1000",
     isRemate: false,
     allowsPool: true,
     spotsLeft: 5,
@@ -210,7 +212,8 @@ const initialServices: Service[] = [
     rating: 5.0,
     reviews: 64,
     price: 35,
-    image: "/coffee-plantation-tour-el-salvador.jpg",
+    // IMAGEN REAL DE CAFE:
+    image: "https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&q=80&w=1000",
     isRemate: false,
     allowsPool: true,
     spotsLeft: 8,
@@ -233,7 +236,8 @@ const initialServices: Service[] = [
     rating: 4.7,
     reviews: 156,
     price: 55,
-    image: "/tropical-rainforest-hiking-trail.jpg",
+    // IMAGEN REAL DE MONTAÑA/BOSQUE:
+    image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&q=80&w=1000",
     isRemate: true,
     discount: 20,
     allowsPool: true,
@@ -257,7 +261,8 @@ const initialServices: Service[] = [
     rating: 4.9,
     reviews: 312,
     price: 12,
-    image: "/traditional-pupusas-salvadoran-food.jpg",
+    // IMAGEN REAL DE COMIDA TÍPICA:
+    image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&q=80&w=1000",
     isRemate: false,
     allowsPool: false,
     spotsLeft: 0,
@@ -275,7 +280,9 @@ const initialServices: Service[] = [
     rating: 4.6,
     reviews: 78,
     price: 25,
-    image: "/cultural-festival-colorful-parade.jpg",
+    // IMAGEN REAL DE FESTIVAL:
+    image: "https://res.cloudinary.com/djpzii4u9/image/upload/v1770576350/302751817_604425074541457_8228080554450174779_n_nhgwlx.jpg",
+    
     isRemate: true,
     discount: 15,
     allowsPool: true,
@@ -298,7 +305,8 @@ const initialPools: Pool[] = [
     serviceName: "Hotel Vista al Volcán",
     serviceId: 1,
     location: "Santa Ana",
-    image: "/volcano-view-hotel-el-salvador.jpg",
+    // MISMA IMAGEN QUE EL SERVICIO 1:
+    image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=1000",
     leader: { name: "María G.", avatar: "MG" },
     currentMembers: 3,
     targetMembers: 4,
@@ -319,7 +327,8 @@ const initialPools: Pool[] = [
     serviceName: "Surf Experience El Tunco",
     serviceId: 2,
     location: "El Tunco",
-    image: "/surfing-beach-el-tunco-el-salvador.jpg",
+    // MISMA IMAGEN QUE EL SERVICIO 2:
+    image: "https://images.unsplash.com/photo-1502680390469-be75c86b636f?auto=format&fit=crop&q=80&w=1000",
     leader: { name: "José P.", avatar: "JP" },
     currentMembers: 5,
     targetMembers: 5,
@@ -355,7 +364,8 @@ const initialPools: Pool[] = [
     serviceName: "Ruta del Café Premium",
     serviceId: 3,
     location: "Ataco",
-    image: "/coffee-plantation-tour-el-salvador.jpg",
+    // MISMA IMAGEN QUE EL SERVICIO 3:
+    image: "https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&q=80&w=1000",
     leader: { name: "Roberto S.", avatar: "RS" },
     currentMembers: 2,
     targetMembers: 6,
@@ -406,7 +416,7 @@ const initialRoutes: Route[] = [
   },
 ]
 
-export const useAppStore = create<AppState>(
+export const useAppStore = create<AppState>()(
   persist(
     (set, get) => ({
       services: initialServices,
@@ -626,7 +636,6 @@ export const useAppStore = create<AppState>(
           const pool = state.pools.find((p) => p.id === poolId)
           if (!pool) return state
 
-          const pricePerMember = pool.totalPrice / pool.targetMembers
           let updatedPools = state.pools
           let updatedPaymentPending = state.poolPaymentPending
 
@@ -676,6 +685,6 @@ export const useAppStore = create<AppState>(
     }),
     {
       name: "app-storage",
-    }
-  )
+    },
+  ),
 )
