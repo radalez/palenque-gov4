@@ -4,6 +4,7 @@ import { useState } from "react"
 import { MobileNav } from "@/components/mobile-nav"
 import { SidebarMenu } from "@/components/sidebar-menu"
 import { MarketplaceScreen } from "@/components/screens/marketplace-screen"
+import { BusinessesScreen } from "@/components/screens/businesses-screen"
 import { PoolScreen } from "@/components/screens/pool-screen"
 import { SafeFlowScreen } from "@/components/screens/safe-flow-screen"
 import { ProfileScreen } from "@/components/screens/profile-screen"
@@ -20,14 +21,15 @@ import { SupportExtendedScreen } from "@/components/screens/support-extended-scr
 import { RoutesScreen } from "@/components/screens/routes-screen"
 import { LoginScreen } from "@/components/screens/login-screen"
 import { OnboardingScreen } from "@/components/screens/onboarding-screen"
-import { ShareInviteModal } from "@/components/share-invite-modal"
-import { PoolPaymentModal } from "@/components/pool-payment-modal"
 import { FavoritesScreen } from "@/components/screens/favorites-screen"
 import { RecommendationsScreen } from "@/components/screens/recommendations-screen"
+import { ShareInviteModal } from "@/components/share-invite-modal"
+import { PoolPaymentModal } from "@/components/pool-payment-modal"
 import { useAppStore } from "@/lib/store"
 
 type ActiveTab =
   | "marketplace"
+  | "businesses"
   | "pool"
   | "safeflow"
   | "profile"
@@ -57,6 +59,9 @@ export default function Home() {
   const [showPaymentModal, setShowPaymentModal] = useState(false)
   const [selectedPoolForShare, setSelectedPoolForShare] = useState<any>(null)
   const [selectedPoolForPayment, setSelectedPoolForPayment] = useState<any>(null)
+  
+  // Para soporte de queries en URL (si se necesita)
+  const [, setQueryParams] = useState<Record<string, string>>({})
 
   const handleLoginSuccess = () => {
     setShowOnboarding(true)
@@ -94,7 +99,7 @@ export default function Home() {
   }
 
   const isMainTab =
-    activeTab === "marketplace" || activeTab === "pool" || activeTab === "safeflow" || activeTab === "profile" || activeTab === "rutas"
+    activeTab === "marketplace" || activeTab === "businesses" || activeTab === "pool" || activeTab === "safeflow" || activeTab === "profile" || activeTab === "rutas"
 
   return (
     <main className="min-h-screen bg-background flex flex-col max-w-md mx-auto relative">
@@ -103,7 +108,14 @@ export default function Home() {
 
       {/* Screen Content */}
       <div className="flex-1 overflow-y-auto pb-20">
-        {activeTab === "marketplace" && <MarketplaceScreen onNavigate={(tab) => setActiveTab(tab as ActiveTab)} />}
+        {activeTab === "marketplace" && (
+          <MarketplaceScreen
+            onNavigate={(tab) => setActiveTab(tab as ActiveTab)}
+          />
+        )}
+        {activeTab === "businesses" && (
+          <BusinessesScreen onNavigate={(tab) => setActiveTab(tab as ActiveTab)} />
+        )}
         {activeTab === "pool" && <PoolScreen onOpenShare={handleOpenShare} onOpenPayment={handleOpenPayment} onNavigate={(tab) => setActiveTab(tab as ActiveTab)} />}
         {activeTab === "safeflow" && <SafeFlowScreen onNavigate={(tab) => setActiveTab(tab as ActiveTab)} />}
         {activeTab === "rutas" && <RoutesScreen onNavigate={(tab) => setActiveTab(tab as ActiveTab)} />}

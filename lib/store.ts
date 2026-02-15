@@ -27,6 +27,19 @@ export interface Service {
   extras?: { name: string; price: number }[]
   ratings?: Rating[]
   linkTypes?: ("oferta" | "descuento" | "feriado")[]
+  businessId?: number
+  businessName?: string
+  businessAvatar?: string
+  businessRating?: number
+  businessReviews?: number
+  galleryImages?: string[]
+  features?: string[]
+  relatedServices?: number[]
+  socialLinks?: {
+    whatsapp?: string
+    instagram?: string
+    facebook?: string
+  }
 }
 
 export interface PoolMember {
@@ -116,8 +129,28 @@ export interface Recommendation {
   stats: RecommendationStats
 }
 
+export interface Business {
+  id: number
+  name: string
+  category: string
+  logo: string
+  coverImage: string
+  rating: number
+  reviews: number
+  description: string
+  location: string
+  services: number[]
+  socialLinks: {
+    whatsapp?: string
+    instagram?: string
+    facebook?: string
+    phone?: string
+  }
+}
+
 interface AppState {
   services: Service[]
+  businesses: Business[]
   pools: Pool[]
   bookings: Booking[]
   favorites: number[]
@@ -162,8 +195,7 @@ const initialServices: Service[] = [
     rating: 4.9,
     reviews: 127,
     price: 85,
-    // IMAGEN REAL DE UN HOTEL CON VISTA:
-    image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=1000",
+    image: "/volcano-view-hotel.jpg",
     isRemate: true,
     discount: 30,
     allowsPool: true,
@@ -178,6 +210,19 @@ const initialServices: Service[] = [
     ],
     ratings: [],
     linkTypes: ["oferta", "descuento"],
+    businessId: 1,
+    businessName: "Hoteles Volcán El Salvador",
+    businessAvatar: "HV",
+    businessRating: 4.9,
+    businessReviews: 127,
+    galleryImages: ["/volcano-view-hotel.jpg"],
+    features: ["Vistas panorámicas", "Spa completo", "Restaurante gourmet", "WiFi gratis", "Piscina temperada"],
+    relatedServices: [2, 4],
+    socialLinks: {
+      whatsapp: "+50373456789",
+      instagram: "@hotelvolcan",
+      facebook: "HotelsVolcan",
+    },
   },
   {
     id: 2,
@@ -187,8 +232,7 @@ const initialServices: Service[] = [
     rating: 4.8,
     reviews: 89,
     price: 45,
-    // IMAGEN REAL DE SURF:
-    image: "https://images.unsplash.com/photo-1502680390469-be75c86b636f?auto=format&fit=crop&q=80&w=1000",
+    image: "/surfing-beach.jpg",
     isRemate: false,
     allowsPool: true,
     spotsLeft: 5,
@@ -203,6 +247,19 @@ const initialServices: Service[] = [
     ],
     ratings: [],
     linkTypes: ["oferta"],
+    businessId: 2,
+    businessName: "Escuela Surf Tunco",
+    businessAvatar: "ST",
+    businessRating: 4.8,
+    businessReviews: 89,
+    galleryImages: ["/surfing-beach.jpg"],
+    features: ["Instructores certificados", "Equipo de calidad", "Clases personalizadas", "Fotografía incluida"],
+    relatedServices: [1, 3],
+    socialLinks: {
+      whatsapp: "+50373456790",
+      instagram: "@surftunco",
+      facebook: "SurfTuncoElSalvador",
+    },
   },
   {
     id: 3,
@@ -212,8 +269,7 @@ const initialServices: Service[] = [
     rating: 5.0,
     reviews: 64,
     price: 35,
-    // IMAGEN REAL DE CAFE:
-    image: "https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&q=80&w=1000",
+    image: "/coffee-plantation.jpg",
     isRemate: false,
     allowsPool: true,
     spotsLeft: 8,
@@ -227,6 +283,19 @@ const initialServices: Service[] = [
     ],
     ratings: [],
     linkTypes: ["feriado"],
+    businessId: 3,
+    businessName: "Cafeterías Ataco Exclusivo",
+    businessAvatar: "CA",
+    businessRating: 5.0,
+    businessReviews: 64,
+    galleryImages: ["/coffee-plantation.jpg"],
+    features: ["Plantaciones orgánicas", "Degustación gourmet", "Almuerzo típico", "Tour educativo"],
+    relatedServices: [4, 5],
+    socialLinks: {
+      whatsapp: "+50373456791",
+      instagram: "@cafeatacoelsalvador",
+      facebook: "CafeteríasAtaco",
+    },
   },
   {
     id: 4,
@@ -236,8 +305,7 @@ const initialServices: Service[] = [
     rating: 4.7,
     reviews: 156,
     price: 55,
-    // IMAGEN REAL DE MONTAÑA/BOSQUE:
-    image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&q=80&w=1000",
+    image: "/rainforest-hiking.jpg",
     isRemate: true,
     discount: 20,
     allowsPool: true,
@@ -252,6 +320,19 @@ const initialServices: Service[] = [
     ],
     ratings: [],
     linkTypes: ["descuento", "feriado"],
+    businessId: 4,
+    businessName: "Ecoturismo Salvadoreño",
+    businessAvatar: "ES",
+    businessRating: 4.7,
+    businessReviews: 156,
+    galleryImages: ["/rainforest-hiking.jpg"],
+    features: ["Biodiversidad única", "Guías expertos", "Equipamiento completo", "Avistamiento de fauna"],
+    relatedServices: [1, 3],
+    socialLinks: {
+      whatsapp: "+50373456792",
+      instagram: "@ecoturismosalvador",
+      facebook: "EcoturismoSalvadoreno",
+    },
   },
   {
     id: 5,
@@ -261,8 +342,7 @@ const initialServices: Service[] = [
     rating: 4.9,
     reviews: 312,
     price: 12,
-    // IMAGEN REAL DE COMIDA TÍPICA:
-    image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&q=80&w=1000",
+    image: "/traditional-pupusas.jpg",
     isRemate: false,
     allowsPool: false,
     spotsLeft: 0,
@@ -271,6 +351,19 @@ const initialServices: Service[] = [
     capacityMax: 20,
     ratings: [],
     linkTypes: ["oferta"],
+    businessId: 5,
+    businessName: "Pupusería La Abuela",
+    businessAvatar: "PA",
+    businessRating: 4.9,
+    businessReviews: 312,
+    galleryImages: ["/traditional-pupusas.jpg"],
+    features: ["Receta tradicional", "Ingredientes frescos", "Comida casera", "Auténtica salvadoreña"],
+    relatedServices: [6],
+    socialLinks: {
+      whatsapp: "+50373456793",
+      instagram: "@pupuseriaabuela",
+      facebook: "PupuseriaLaAbuela",
+    },
   },
   {
     id: 6,
@@ -280,9 +373,7 @@ const initialServices: Service[] = [
     rating: 4.6,
     reviews: 78,
     price: 25,
-    // IMAGEN REAL DE FESTIVAL:
-    image: "https://res.cloudinary.com/djpzii4u9/image/upload/v1770576350/302751817_604425074541457_8228080554450174779_n_nhgwlx.jpg",
-    
+    image: "/cultural-festival.jpg",
     isRemate: true,
     discount: 15,
     allowsPool: true,
@@ -296,6 +387,130 @@ const initialServices: Service[] = [
     ],
     ratings: [],
     linkTypes: ["feriado"],
+    businessId: 6,
+    businessName: "Eventos Culturales Suchitoto",
+    businessAvatar: "EC",
+    businessRating: 4.6,
+    businessReviews: 78,
+    galleryImages: ["/cultural-festival.jpg"],
+    features: ["Taller de teñido", "Música tradicional", "Gastronomía local", "Experiencia cultural"],
+    relatedServices: [5],
+    socialLinks: {
+      whatsapp: "+50373456794",
+      instagram: "@festivalesuchioto",
+      facebook: "FestivalesSuchitoto",
+    },
+  },
+]
+
+const initialBusinesses: Business[] = [
+  {
+    id: 1,
+    name: "Hoteles Volcán El Salvador",
+    category: "hotel",
+    logo: "HV",
+    coverImage: "/volcano-view-hotel.jpg",
+    rating: 4.9,
+    reviews: 127,
+    description: "Cadena hotelera con las mejores vistas volcánicas de El Salvador. Experiencia premium con todos los servicios.",
+    location: "Santa Ana, El Salvador",
+    services: [1],
+    socialLinks: {
+      whatsapp: "+50373456789",
+      instagram: "@hotelvolcan",
+      facebook: "HotelsVolcan",
+      phone: "+50324567890",
+    },
+  },
+  {
+    id: 2,
+    name: "Escuela Surf Tunco",
+    category: "surf",
+    logo: "ST",
+    coverImage: "/surfing-beach.jpg",
+    rating: 4.8,
+    reviews: 89,
+    description: "Escuela de surf con instructores certificados internacionalmente. Clases para principiantes hasta avanzados.",
+    location: "El Tunco, El Salvador",
+    services: [2],
+    socialLinks: {
+      whatsapp: "+50373456790",
+      instagram: "@surftunco",
+      facebook: "SurfTuncoElSalvador",
+      phone: "+50324567891",
+    },
+  },
+  {
+    id: 3,
+    name: "Cafeterías Ataco Exclusivo",
+    category: "cafe",
+    logo: "CA",
+    coverImage: "/coffee-plantation.jpg",
+    rating: 5.0,
+    reviews: 64,
+    description: "Café gourmet de las mejores plantaciones de El Salvador. Tours educativos y degustaciones premium.",
+    location: "Ataco, El Salvador",
+    services: [3],
+    socialLinks: {
+      whatsapp: "+50373456791",
+      instagram: "@cafeatacoelsalvador",
+      facebook: "CafeteríasAtaco",
+      phone: "+50324567892",
+    },
+  },
+  {
+    id: 4,
+    name: "Ecoturismo Salvadoreño",
+    category: "eco",
+    logo: "ES",
+    coverImage: "/rainforest-hiking.jpg",
+    rating: 4.7,
+    reviews: 156,
+    description: "Operador turístico especializado en aventura y naturaleza. Rutas diseñadas para conservación ambiental.",
+    location: "Ahuachapán, El Salvador",
+    services: [4],
+    socialLinks: {
+      whatsapp: "+50373456792",
+      instagram: "@ecoturismosalvador",
+      facebook: "EcoturismoSalvadoreno",
+      phone: "+50324567893",
+    },
+  },
+  {
+    id: 5,
+    name: "Pupusería La Abuela",
+    category: "food",
+    logo: "PA",
+    coverImage: "/traditional-pupusas.jpg",
+    rating: 4.9,
+    reviews: 312,
+    description: "Tradición culinaria salvadoreña desde 1975. Las mejores pupusas con receta auténtica.",
+    location: "San Salvador, El Salvador",
+    services: [5],
+    socialLinks: {
+      whatsapp: "+50373456793",
+      instagram: "@pupuseriaabuela",
+      facebook: "PupuseriaLaAbuela",
+      phone: "+50324567894",
+    },
+  },
+  {
+    id: 6,
+    name: "Eventos Culturales Suchitoto",
+    category: "events",
+    logo: "EC",
+    coverImage: "/cultural-festival.jpg",
+    rating: 4.6,
+    reviews: 78,
+    description: "Promotora de eventos y experiencias culturales. Celebramos la identidad salvadoreña.",
+    location: "Suchitoto, El Salvador",
+    services: [6],
+    socialLinks: {
+      whatsapp: "+50373456794",
+      instagram: "@festivalesuchioto",
+      facebook: "FestivalesSuchitoto",
+      phone: "+50324567895",
+    },
   },
 ]
 
@@ -305,8 +520,7 @@ const initialPools: Pool[] = [
     serviceName: "Hotel Vista al Volcán",
     serviceId: 1,
     location: "Santa Ana",
-    // MISMA IMAGEN QUE EL SERVICIO 1:
-    image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=1000",
+    image: "/volcano-view-hotel.jpg",
     leader: { name: "María G.", avatar: "MG" },
     currentMembers: 3,
     targetMembers: 4,
@@ -327,8 +541,7 @@ const initialPools: Pool[] = [
     serviceName: "Surf Experience El Tunco",
     serviceId: 2,
     location: "El Tunco",
-    // MISMA IMAGEN QUE EL SERVICIO 2:
-    image: "https://images.unsplash.com/photo-1502680390469-be75c86b636f?auto=format&fit=crop&q=80&w=1000",
+    image: "/surfing-beach.jpg",
     leader: { name: "José P.", avatar: "JP" },
     currentMembers: 5,
     targetMembers: 5,
@@ -364,8 +577,7 @@ const initialPools: Pool[] = [
     serviceName: "Ruta del Café Premium",
     serviceId: 3,
     location: "Ataco",
-    // MISMA IMAGEN QUE EL SERVICIO 3:
-    image: "https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&q=80&w=1000",
+    image: "/coffee-plantation.jpg",
     leader: { name: "Roberto S.", avatar: "RS" },
     currentMembers: 2,
     targetMembers: 6,
@@ -416,10 +628,11 @@ const initialRoutes: Route[] = [
   },
 ]
 
-export const useAppStore = create<AppState>()(
+export const useAppStore = create<AppState>(
   persist(
     (set, get) => ({
       services: initialServices,
+      businesses: initialBusinesses,
       pools: initialPools,
       bookings: [],
       favorites: [],
@@ -636,6 +849,7 @@ export const useAppStore = create<AppState>()(
           const pool = state.pools.find((p) => p.id === poolId)
           if (!pool) return state
 
+          const pricePerMember = pool.totalPrice / pool.targetMembers
           let updatedPools = state.pools
           let updatedPaymentPending = state.poolPaymentPending
 
@@ -685,6 +899,6 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: "app-storage",
-    },
-  ),
+    }
+  )
 )

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import {
   Search,
   MapPin,
@@ -25,6 +26,7 @@ import { HeaderWithMenu } from "@/components/header-with-menu"
 import { RatingModal } from "@/components/rating-modal"
 import { AdvancedFilterPanel, type FilterOptions } from "@/components/advanced-filter-panel"
 import { PriceComparisonModal } from "@/components/price-comparison-modal"
+import { BusinessCarousel } from "@/components/business-carousel"
 
 const categories = [
   { id: "all", label: "Todo", icon: Flame },
@@ -38,9 +40,11 @@ const categories = [
 
 interface MarketplaceScreenProps {
   onNavigate?: (tab: string) => void
+  onViewServiceDetail?: (service: Service) => void
 }
 
-export function MarketplaceScreen({ onNavigate }: MarketplaceScreenProps) {
+export function MarketplaceScreen({ onNavigate, onViewServiceDetail }: MarketplaceScreenProps) {
+  const router = useRouter()
   const [selectedService, setSelectedService] = useState<Service | null>(null)
   const [showBookingModal, setShowBookingModal] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState("all")
@@ -55,7 +59,7 @@ export function MarketplaceScreen({ onNavigate }: MarketplaceScreenProps) {
     searchQuery: "",
   })
 
-  const { services, toggleFavoritePreference, userFavorites } = useAppStore()
+  const { services, businesses, toggleFavoritePreference, userFavorites } = useAppStore()
 
   const filteredServices = services.filter((service) => {
     // Category filter
@@ -137,6 +141,17 @@ export function MarketplaceScreen({ onNavigate }: MarketplaceScreenProps) {
         </div>
       </div>
 
+      {/* Business Carousel */}
+      <div className="px-4 py-4">
+        <BusinessCarousel
+          businesses={businesses}
+          onViewProfile={(business) => {
+            // Handle viewing business profile
+          }}
+          onViewMore={() => onNavigate?.("businesses")}
+        />
+      </div>
+
       {/* Remates Section with Comparison Button */}
       <div className="px-4 mb-4">
         <div className="flex items-center justify-between mb-3">
@@ -202,8 +217,8 @@ export function MarketplaceScreen({ onNavigate }: MarketplaceScreenProps) {
             {/* Content */}
             <div className="p-4">
               <div className="flex items-start justify-between mb-2">
-                <div className="flex-1">
-                  <h3 className="font-semibold text-foreground">{service.name}</h3>
+                <div className="flex-1 cursor-pointer" onClick={() => router.push(`/s/${service.id}`)}>
+                  <h3 className="font-semibold text-foreground hover:text-primary transition-colors">{service.name}</h3>
                   <div className="flex items-center gap-1 text-muted-foreground text-sm">
                     <MapPin className="w-3 h-3" />
                     <span>{service.location}</span>
@@ -226,26 +241,37 @@ export function MarketplaceScreen({ onNavigate }: MarketplaceScreenProps) {
                 </button>
               </div>
 
-              <div className="flex items-center justify-between mt-3">
-                <div>
-                  {service.isRemate ? (
-                    <div className="flex items-center gap-2">
-                      <span className="text-muted-foreground line-through text-sm">
-                        ${Math.round(service.price / (1 - (service.discount || 0) / 100))}
-                      </span>
-                      <span className="text-xl font-bold text-secondary">${service.price}</span>
-                    </div>
-                  ) : (
-                    <span className="text-xl font-bold text-foreground">${service.price}</span>
-                  )}
-                  <span className="text-muted-foreground text-sm"> / persona</span>
+              <div className="flex flex-col gap-2 mt-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    {service.isRemate ? (
+                      <div className="flex items-center gap-2">
+                        <span className="text-muted-foreground line-through text-sm">
+                          ${Math.round(service.price / (1 - (service.discount || 0) / 100))}
+                        </span>
+                        <span className="text-xl font-bold text-secondary">${service.price}</span>
+                      </div>
+                    ) : (
+                      <span className="text-xl font-bold text-foreground">${service.price}</span>
+                    )}
+                    <span className="text-muted-foreground text-sm"> / persona</span>
+                  </div>
                 </div>
-                <Button
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl"
-                  onClick={() => setSelectedService(service)}
-                >
-                  Reservar
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    className="flex-1 rounded-xl"
+                    onClick={() => router.push(`/s/${service.id}`)}
+                  >
+                    Ver Detalles
+                  </Button>
+                  <Button
+                    className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl"
+                    onClick={() => setSelectedService(service)}
+                  >
+                    Reservar
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
