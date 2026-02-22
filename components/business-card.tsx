@@ -15,15 +15,16 @@ interface BusinessCardProps {
 
 export function BusinessCard({ business, onViewProfile }: BusinessCardProps) {
   const router = useRouter()
-  const handleWhatsApp = () => {
-    if (business.socialLinks.whatsapp) {
+ const handleWhatsApp = () => {
+    // Añadimos el signo '?' después de socialLinks
+    if (business.socialLinks?.whatsapp) {
       const phone = business.socialLinks.whatsapp.replace(/\D/g, "")
       window.open(`https://wa.me/${phone}`, "_blank")
     }
   }
 
   const handleCall = () => {
-    if (business.socialLinks.phone) {
+    if (business.socialLinks?.phone) {
       window.location.href = `tel:${business.socialLinks.phone}`
     }
   }
@@ -86,7 +87,8 @@ export function BusinessCard({ business, onViewProfile }: BusinessCardProps) {
 
         {/* Services Count */}
         <div className="text-xs text-muted-foreground">
-          {business.services.length} servicio{business.services.length !== 1 ? "s" : ""} disponible{business.services.length !== 1 ? "s" : ""}
+         {/* Usamos un seguro para que si services es undefined, use un array vacío */}
+        {(business.services || []).length} servicio{(business.services || []).length !== 1 ? "s" : ""} disponible{(business.services || []).length !== 1 ? "s" : ""}
         </div>
 
         {/* Action Buttons */}
@@ -130,27 +132,28 @@ export function BusinessCard({ business, onViewProfile }: BusinessCardProps) {
 
         {/* Social Links */}
         <div className="flex gap-2 pt-2 border-t">
-          {business.socialLinks.instagram && (
+          {/* El error ocurre aquí: añadimos '?' */}
+          {business.socialLinks?.instagram && (
             <Button
               size="sm"
               variant="ghost"
               className="h-8 w-8 p-0"
               onClick={(e) => {
                 e.stopPropagation()
-                window.open(`https://instagram.com/${business.socialLinks.instagram}`, "_blank")
+                window.open(`https://instagram.com/${business.socialLinks?.instagram}`, "_blank")
               }}
             >
               <ExternalLink className="w-4 h-4" />
             </Button>
           )}
-          {business.socialLinks.facebook && (
+          {business.socialLinks?.facebook && (
             <Button
               size="sm"
               variant="ghost"
               className="h-8 w-8 p-0"
               onClick={(e) => {
                 e.stopPropagation()
-                window.open(`https://facebook.com/${business.socialLinks.facebook}`, "_blank")
+                window.open(`https://facebook.com/${business.socialLinks?.facebook}`, "_blank")
               }}
             >
               <ExternalLink className="w-4 h-4" />

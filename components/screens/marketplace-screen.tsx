@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import {
   Search,
@@ -46,7 +46,6 @@ interface MarketplaceScreenProps {
 export function MarketplaceScreen({ onNavigate, onViewServiceDetail }: MarketplaceScreenProps) {
   const router = useRouter()
   const [selectedService, setSelectedService] = useState<Service | null>(null)
-  const [showBookingModal, setShowBookingModal] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [searchQuery, setSearchQuery] = useState("")
   const [serviceToRate, setServiceToRate] = useState<Service | null>(null)
@@ -59,26 +58,40 @@ export function MarketplaceScreen({ onNavigate, onViewServiceDetail }: Marketpla
     searchQuery: "",
   })
 
-  const { services, businesses, toggleFavoritePreference, userFavorites } = useAppStore()
+  // --- CONEXIÓN A TU API REAL ---
+  const { 
+    services, 
+    businesses, 
+    toggleFavoritePreference, 
+    userFavorites,
+    fetchServices,
+    fetchBusinesses,
+    isLoading
+  } = useAppStore()
+
+  useEffect(() => {
+    fetchServices() // Jala servicios desde 157.245.181.207
+    fetchBusinesses() // Jala tiendas de tu servidor
+  }, [])
 
   const filteredServices = services.filter((service) => {
-    // Category filter
+    // Filtro de categoría
     if (selectedCategory !== "all" && service.category !== selectedCategory) {
       return false
     }
 
-    // Search filter (combines both search and filter search)
+    // Filtro de búsqueda combinado
     const combinedSearch = searchQuery || filters.searchQuery
     if (combinedSearch && !service.name.toLowerCase().includes(combinedSearch.toLowerCase())) {
       return false
     }
 
-    // Rating filter
+    // Filtro de calificación
     if (service.rating < filters.ratingMin) {
       return false
     }
 
-    // Price filter
+    // Filtro de rango de precio
     if (service.price < filters.priceMin || service.price > filters.priceMax) {
       return false
     }
@@ -86,20 +99,16 @@ export function MarketplaceScreen({ onNavigate, onViewServiceDetail }: Marketpla
     return true
   })
 
-  const toggleFavorite = (serviceId: string) => {
-    toggleFavoritePreference(serviceId)
-  }
-
-  const favorites = userFavorites
-
   return (
     <div className="flex flex-col">
       <HeaderWithMenu title="Palenque Go" onNavigate={onNavigate} />
+
       <div className="flex justify-between items-center px-4 py-4">
         <div className="w-10 h-10 rounded-full bg-primary-foreground/20 flex items-center justify-center">
           <span className="text-primary-foreground font-semibold">JD</span>
         </div>
-        {/* Search Bar */}
+        
+        {/* Barra de Búsqueda */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
           <Input
@@ -118,7 +127,7 @@ export function MarketplaceScreen({ onNavigate, onViewServiceDetail }: Marketpla
         </div>
       </div>
 
-      {/* Categories */}
+      {/* Categorías */}
       <div className="px-4 py-4">
         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
           {categories.map((cat) => {
@@ -141,18 +150,16 @@ export function MarketplaceScreen({ onNavigate, onViewServiceDetail }: Marketpla
         </div>
       </div>
 
-      {/* Business Carousel */}
+      {/* Carousel de Negocios Reales */}
       <div className="px-4 py-4">
         <BusinessCarousel
           businesses={businesses}
-          onViewProfile={(business) => {
-            // Handle viewing business profile
-          }}
+          onViewProfile={(business) => router.push(`/b/${business.id}`)}
           onViewMore={() => onNavigate?.("businesses")}
         />
       </div>
 
-      {/* Remates Section with Comparison Button */}
+      {/* Sección de Remates Flow */}
       <div className="px-4 mb-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
@@ -175,110 +182,114 @@ export function MarketplaceScreen({ onNavigate, onViewServiceDetail }: Marketpla
         </div>
       </div>
 
-      {/* Service Cards */}
-      <div className="px-4 space-y-4 pb-4">
-        {filteredServices.map((service) => (
-          <div key={service.id} className="bg-card rounded-2xl overflow-hidden shadow-sm border border-border">
-            {/* Image */}
-            <div className="relative h-40">
-              <img
-                src={service.image || "/placeholder.svg"}
-                alt={service.name}
-                className="w-full h-full object-cover"
-              />
-              {/* Favorite Button */}
-              <button
-                onClick={() => toggleFavoritePreference(service.id)}
-                className="absolute top-3 right-3 w-8 h-8 rounded-full bg-card/80 backdrop-blur-sm flex items-center justify-center"
-              >
-                <Heart
-                  className={cn(
-                    "w-5 h-5 transition-colors",
-                    userFavorites.some((f) => f.serviceId === service.id)
-                      ? "fill-red-500 text-red-500"
-                      : "text-foreground",
-                  )}
-                />
-              </button>
-              {/* Remate Badge */}
-              {service.isRemate && (
-                <Badge className="absolute top-3 left-3 bg-secondary text-secondary-foreground">
-                  <Flame className="w-3 h-3 mr-1" />-{service.discount}%
-                </Badge>
-              )}
-              {/* Pool Badge */}
-              {service.allowsPool && (
-                <Badge className="absolute bottom-3 left-3 bg-primary text-primary-foreground">
-                  <span className="text-xs">Pool disponible • {service.spotsLeft} cupos</span>
-                </Badge>
-              )}
-            </div>
-
-            {/* Content */}
-            <div className="p-4">
-              <div className="flex items-start justify-between mb-2">
-                <div className="flex-1 cursor-pointer" onClick={() => router.push(`/s/${service.id}`)}>
-                  <h3 className="font-semibold text-foreground hover:text-primary transition-colors">{service.name}</h3>
-                  <div className="flex items-center gap-1 text-muted-foreground text-sm">
-                    <MapPin className="w-3 h-3" />
-                    <span>{service.location}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Rating Row with Calificar Button */}
-              <div className="flex items-center justify-between mb-3 pb-3 border-b border-border">
-                <div className="flex items-center gap-1">
-                  <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                  <span className="font-medium text-foreground text-sm">{service.rating}</span>
-                  <span className="text-muted-foreground text-xs">({service.reviews})</span>
-                </div>
-                <button
-                  onClick={() => setServiceToRate(service)}
-                  className="text-xs font-medium text-primary hover:underline"
-                >
-                  Calificar
-                </button>
-              </div>
-
-              <div className="flex flex-col gap-2 mt-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    {service.isRemate ? (
-                      <div className="flex items-center gap-2">
-                        <span className="text-muted-foreground line-through text-sm">
-                          ${Math.round(service.price / (1 - (service.discount || 0) / 100))}
-                        </span>
-                        <span className="text-xl font-bold text-secondary">${service.price}</span>
-                      </div>
-                    ) : (
-                      <span className="text-xl font-bold text-foreground">${service.price}</span>
-                    )}
-                    <span className="text-muted-foreground text-sm"> / persona</span>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    className="flex-1 rounded-xl"
-                    onClick={() => router.push(`/s/${service.id}`)}
-                  >
-                    Ver Detalles
-                  </Button>
-                  <Button
-                    className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl"
-                    onClick={() => setSelectedService(service)}
-                  >
-                    Reservar
-                  </Button>
-                </div>
-              </div>
-            </div>
+      {/* Listado de Tarjetas */}
+      <div className="px-4 space-y-4 pb-24">
+        {isLoading ? (
+          <div className="py-10 text-center">
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-muted-foreground italic">Sincronizando con Palenque...</p>
           </div>
-        ))}
+        ) : (
+          filteredServices.map((service) => (
+            <div key={service.id} className="bg-card rounded-2xl overflow-hidden shadow-sm border border-border">
+              <div className="relative h-40">
+                <img
+                  src={service.image || "/placeholder.svg"}
+                  alt={service.name}
+                  className="w-full h-full object-cover"
+                />
+                <button
+                  onClick={() => toggleFavoritePreference(service.id)}
+                  className="absolute top-3 right-3 w-8 h-8 rounded-full bg-card/80 backdrop-blur-sm flex items-center justify-center"
+                >
+                  <Heart
+                    className={cn(
+                      "w-5 h-5 transition-colors",
+                      userFavorites.some((f) => f.serviceId === service.id)
+                        ? "fill-red-500 text-red-500"
+                        : "text-foreground",
+                    )}
+                  />
+                </button>
+                {service.isRemate && (
+                  <Badge className="absolute top-3 left-3 bg-secondary text-secondary-foreground">
+                    <Flame className="w-3 h-3 mr-1" />-{service.discount}%
+                  </Badge>
+                )}
+                {service.allowsPool && (
+                  <Badge className="absolute bottom-3 left-3 bg-primary text-primary-foreground">
+                    <span className="text-xs">Pool disponible • {service.spotsLeft} cupos</span>
+                  </Badge>
+                )}
+              </div>
+
+              <div className="p-4">
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex-1 cursor-pointer" onClick={() => router.push(`/s/${service.id}`)}>
+                    <h3 className="font-semibold text-foreground hover:text-primary transition-colors">{service.name}</h3>
+                    <div className="flex items-center gap-1 text-muted-foreground text-sm">
+                      <MapPin className="w-3 h-3" />
+                      <span>{service.location}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between mb-3 pb-3 border-b border-border">
+                  <div className="flex items-center gap-1">
+                    <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                    <span className="font-medium text-foreground text-sm">{service.rating}</span>
+                    <span className="text-muted-foreground text-xs">({service.reviews})</span>
+                  </div>
+                  <button
+                    onClick={() => setServiceToRate(service)}
+                    className="text-xs font-medium text-primary hover:underline"
+                  >
+                    Calificar
+                  </button>
+                </div>
+
+                <div className="flex flex-col gap-2 mt-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      {service.isRemate ? (
+                        <div className="flex items-center gap-2">
+                          <span className="text-muted-foreground line-through text-sm">
+                            ${Math.round(service.price / (1 - (service.discount || 0) / 100))}
+                          </span>
+                          <span className="text-xl font-bold text-secondary">${service.price}</span>
+                        </div>
+                      ) : (
+                        <span className="text-xl font-bold text-foreground">${service.price}</span>
+                      )}
+                      <span className="text-muted-foreground text-sm"> / persona</span>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      className="flex-1 rounded-xl"
+                      onClick={() => router.push(`/s/${service.id}`)}
+                    >
+                      Ver Detalles
+                    </Button>
+                    <Button
+                      className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl"
+                      onClick={() => setSelectedService(service)}
+                    >
+                      Reservar
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
-      {selectedService && <BookingModal service={selectedService} onClose={() => setSelectedService(null)} />}
+      {/* Modales */}
+      {selectedService && (
+        <BookingModal service={selectedService} onClose={() => setSelectedService(null)} />
+      )}
 
       {serviceToRate && (
         <RatingModal
